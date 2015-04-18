@@ -1,49 +1,80 @@
 #include <stdint.h>
+#include <stddef.h>
+
 /*
- * Supported data types:
- *    unsigned int 32-bit
- *    signed int 32-bit
- *    unsigned short 16-bit
- *    signed short 16-bit
- *    unsigned char 8-bit
- *    signed char 8-bit
- *    float 32-bit
- *    string (non-null terminated)
+ * USARTSendData_Handler: Function prototype to handle sending string over UART
  *
- * Sample usage:
- * lsdata_init(&ctx,UART0);
- * lsdata_log_uint32(&ctx,CHANNEL_0,some_val);
+ * Note that the data does is not necessarily a string, and is not null terminated
+ * so the length parameter must be respected.
+ *
+ * For example:
+ *     void my_sender(uint8_t *data, size_t len) {
+ *         // You CANNOT just printf("%s",data)
+ *     }
  */
-typedef struct lsdata_pkt_hdr {
+typedef void (*USARTSendData_Handler)(uint8_t *data, size_t len);
+
+/*
+ * gdd_err_t: Error codes
+ *
+ * GDD_ERROR_OK:      success
+ * GDD_ERROR_TIMEOUT: something timed out
+ * GDD_ERROR_UNKNOWN: unknown failure (hopefully this never gets returned)
+ */
+typedef enum {
+  GDD_ERROR_OK,
+  GDD_ERROR_TIMEOUT,
+  GDD_ERROR_UNKNOWN
+} gdd_err_t;
+
+/*
+ * gdd_channel_t: Indicates number of supported channels
+ */
+typedef enum {
+  GDD_CHANNEL_0,
+  GDD_CHANNEL_1,
+  GDD_CHANNEL_2,
+  GDD_CHANNEL_3
+} gdd_channel_t;
+
+/*
+ * gdd_ch_type_t: supported channel data types
+ *
+ * GDD_CHTYPE_INT32:  no implemented
+ * GDD_CHTYPE_UINT32: big endian over transport
+ * GDD_CHTYPE_DOUBLE: no implemented
+ * GDD_CHTYPE_STRING: complete
+ */
+typedef enum {
+  GDD_CHTYPE_INT32,
+  GDD_CHTYPE_UINT32,
+  GDD_CHTYPE_DOUBLE,
+  GDD_CHTYPE_STRING,
+  GDD_CHTYPE_MAX
+} gdd_ch_type_t;
+
+/* 
+ * gdd_pkt_type_t: supported channel packet formats
+ *
+ * GDD_TYPE_1CHAN:  one channel of data only in the payload
+ */
+typedef enum {
+  GDD_TYPE_1CHAN,
+} gdd_pkt_type_t;
+
+typedef struct gdd_pkt_hdr {
   uint8_t    sync;
   uint8_t    version;
   uint8_t    type;
   uint8_t    len;
   uint8_t    crc8;
-} lsdata_pkt_hdr_t;
-typedef struct lsdata_ch_pkt_hdr {
-  // lower half (0x0f) is data type=>implicitly determines length?
-  // upper half (0xf0) is channel# (0~15)
-  uint8_t    channel;
-} lsdata_ch_pkt_hdr_t;
-typedef struct lsdata_ctx {
-} lsdata_ctx_t;
-typedef enum {
-  LSDATA_ERROR_OK,
-  LSDATA_ERROR_TIMEOUT,
-  LSDATA_ERROR_FALSE
-} lsdata_err_t;
-typedef enum {
-  LSDATA_CHANNEL_0,
-  LSDATA_CHANNEL_1,
-  LSDATA_CHANNEL_2,
-  LSDATA_CHANNEL_3
-} lsdata_channel_t;
+} gdd_pkt_hdr_t;
 
-/*
- * In order to use a UART, you'll need to pass in a function pointer
- * to something that will queue up each character onto the UART.
- * Prototype is lsdata_err_t write_char(uint8_t c) {}
- */
-extern lsdata_err_t lsdata_init(lsdata_ctx_t* ctx);
-extern lsdata_err_t lsdata_log_uint32(lsdata_ctx_t* ctx, lsdata_channel_t channel, uint32_t val);
+typedef struct gdd_ch_pkt_hdr {
+  uint8_t    type;
+  uint8_t    channel;
+} gdd_ch_hdr_t;
+
+typedef struct gdd_ctx {
+  USARTSendData_Handler handler;
+} gdd_ctx_t;

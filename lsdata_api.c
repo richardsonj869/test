@@ -24,7 +24,13 @@ inline gdd_err_t gdd_log_uint32(const gdd_ctx_t* ctx,
 				const gdd_channel_t channel,
 				const uint32_t val)
 {
-  return gdd_log_gen(ctx, channel, &val, GDD_CHTYPE_UINT32, sizeof(uint32_t));
+  // Force big-endian
+  uint8_t val_be[4];
+  val_be[0] = (uint8_t)((val & 0xff000000)>>24);
+  val_be[1] = (uint8_t)((val & 0x00ff0000)>>16);
+  val_be[2] = (uint8_t)((val & 0x0000ff00)>>8);
+  val_be[3] = (uint8_t)((val & 0x000000ff));
+  return gdd_log_gen(ctx, channel, val_be, GDD_CHTYPE_UINT32, sizeof(uint8_t)*4);
 }
 inline gdd_err_t gdd_log_string(const gdd_ctx_t* ctx,
 				const gdd_channel_t channel,
