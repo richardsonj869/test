@@ -1,10 +1,12 @@
 CC=gcc
 CFLAGS=-c -Wall
 LDFLAGS=
-SOURCES=lsdata_api.c lsdata_test.c
+SOURCES=gdd_api.c gdd_test.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=hello
-all: $(OBJECTS)
+EXECUTABLE=gdd_test
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 clean:

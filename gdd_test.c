@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <string.h>
-#include "lsdata_api.h"
+#include "gdd_api.h"
 
 int test1()
 {
   char hdr[] = "abcde";
   gdd_pkt_hdr_t *hdrs = (gdd_pkt_hdr_t*)hdr;
-  printf("lsdata pkt hdr size: %u\n",sizeof(gdd_pkt_hdr_t));
+  printf("gdd pkt hdr size: %u\n",sizeof(gdd_pkt_hdr_t));
   printf("%c %c %c %c %c\n",hdrs->sync,hdrs->version,hdrs->type,hdrs->len,hdrs->crc8);
   return 0;
 }
