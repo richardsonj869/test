@@ -1,9 +1,9 @@
 import sys
-
+import getopt
 # This is meant to quickly unpack and verify features of a GDD packet.
 # Use can be to feed in either binary or hex packet streams into stdin.
-# Defaults to -hex.
-# echo 3e 01 00 0b 54 01 00 12 34 56 78 | python gdd_unpack.py -hex
+# Default mode is hex
+# echo 3e 01 00 0b 54 01 00 12 34 56 78 | python gdd_unpack.py --hex
 
 class crc8:
     def __init__(self):
@@ -46,10 +46,26 @@ class crc8:
         res = self.crcTable[oldCrc & 0xFF ^ byte & 0xFF];
         return res 
 
-def main():
+def usage():
+    print "Usage: gdd_unpack.py --[hex|bin]"
+
+def main(argv):
     _crc = crc8();
-    print "Test: ", sys.argv[1], " = ", _crc.crc([0xa0,0b0]);
+    # mode = 0 is hex, mode = 1 is bin
+    mode = 0
+    try:
+        opts, args = getopt.getopt(argv, "", ["hex", "bin"])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("--hex"):
+            mode = 0
+        elif opt in ("--bin"):
+            mode = 1
+
+    print "Test mode = ",mode, " : ", sys.argv[1], " = ", _crc.crc([0xa0,0b0]);
     
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
