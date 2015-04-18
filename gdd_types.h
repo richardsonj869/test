@@ -1,3 +1,5 @@
+#ifndef __GDD_TYPES_H__
+#define __GDD_TYPES_H__
 #include <stdint.h>
 #include <stddef.h>
 
@@ -78,3 +80,4 @@ typedef struct gdd_ch_pkt_hdr {
 typedef struct gdd_ctx {
   USARTSendData_Handler handler;
 } gdd_ctx_t;
+#endif /* __GDD_TYPES_H__ */

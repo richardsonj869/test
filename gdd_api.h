@@ -1,3 +1,5 @@
+#ifndef __GDD_API_H__
+#define __GDD_API_H__
 #include "gdd_types.h"
 /*
  * In order to use a UART, you'll need to pass in a function pointer
@@ -16,3 +18,4 @@ extern gdd_err_t gdd_log_gen(const gdd_ctx_t* ctx,
 			     const void* val,
 			     const gdd_ch_type_t type,
 			     const size_t sz);
+#endif /* __GDD_API_H__ */
