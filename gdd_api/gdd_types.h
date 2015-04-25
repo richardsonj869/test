@@ -66,9 +66,9 @@ typedef enum {
 
 typedef struct gdd_pkt_hdr {
   uint8_t    sync;
-  uint8_t    version;
   uint8_t    type;
   uint8_t    len;
+  uint8_t    seq;
   uint8_t    crc8;
 } gdd_pkt_hdr_t;
 
@@ -79,5 +79,6 @@ typedef struct gdd_ch_pkt_hdr {
 
 typedef struct gdd_ctx {
   USARTSendData_Handler handler;
+  uint8_t seq;
 } gdd_ctx_t;
 #endif /* __GDD_TYPES_H__ */

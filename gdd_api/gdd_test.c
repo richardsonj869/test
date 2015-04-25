@@ -7,7 +7,7 @@ int test1()
   char hdr[] = "abcde";
   gdd_pkt_hdr_t *hdrs = (gdd_pkt_hdr_t*)hdr;
   printf("gdd pkt hdr size: %u\n",sizeof(gdd_pkt_hdr_t));
-  printf("%c %c %c %c %c\n",hdrs->sync,hdrs->version,hdrs->type,hdrs->len,hdrs->crc8);
+  printf("%c %c %c %c %c\n",hdrs->sync,hdrs->seq,hdrs->type,hdrs->len,hdrs->crc8);
   return 0;
 }
 void my_sender(uint8_t *data, size_t len)

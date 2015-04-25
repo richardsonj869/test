@@ -18,9 +18,10 @@ uint8_t CRC8(const void *vptr, size_t len)
 gdd_err_t gdd_init(gdd_ctx_t* ctx, USARTSendData_Handler handler)
 {
   ctx->handler = handler;
+  ctx->seq = 0;
   return GDD_ERROR_OK;
 }
-inline gdd_err_t gdd_log_uint32(const gdd_ctx_t* ctx,
+inline gdd_err_t gdd_log_uint32(gdd_ctx_t* ctx,
 				const gdd_channel_t channel,
 				const uint32_t val)
 {
@@ -32,13 +33,13 @@ inline gdd_err_t gdd_log_uint32(const gdd_ctx_t* ctx,
   val_be[3] = (uint8_t)((val & 0x000000ff));
   return gdd_log_gen(ctx, channel, val_be, GDD_CHTYPE_UINT32, sizeof(uint8_t)*4);
 }
-inline gdd_err_t gdd_log_string(const gdd_ctx_t* ctx,
+inline gdd_err_t gdd_log_string(gdd_ctx_t* ctx,
 				const gdd_channel_t channel,
 				const char* val)
 {
   return gdd_log_gen(ctx, channel, val, GDD_CHTYPE_STRING, sizeof(char)*strlen(val));
 }
-gdd_err_t gdd_log_gen(const gdd_ctx_t* ctx,
+gdd_err_t gdd_log_gen(gdd_ctx_t* ctx,
 		      const gdd_channel_t channel,
 		      const void* val,
 		      const gdd_ch_type_t type,
@@ -53,8 +54,8 @@ gdd_err_t gdd_log_gen(const gdd_ctx_t* ctx,
   void*          payload   = (void*)(pkt+sizeof(gdd_pkt_hdr_t)+sizeof(gdd_ch_hdr_t));
 
   pkt_hdr->sync    = '>';            // default sync character
-  pkt_hdr->version = 1;
   pkt_hdr->type    = GDD_TYPE_1CHAN; // WARNING: ENUM->uint8_t
+  pkt_hdr->seq     = ctx->seq++;     // let it overflow as well
   pkt_hdr->len     = pkt_len;
   pkt_hdr->crc8    = 0;
   ch_hdr->type     = type;           // WARNING: ENUM->uint8_t
